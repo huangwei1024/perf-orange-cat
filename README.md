@@ -1,6 +1,6 @@
 <h1>perf-orange-cat</h1>
 <br/>
-<h1>客户端性能测试平台 https://github.com/1033866383/perf-orange-cat/releases/download/v1.0.0/perf-orange-cat.zip</h1>
+<h1>客户端性能测试平台</h1>
 
 ![微信图片_20230624120931](https://github.com/1033866383/perf-orange-cat/assets/56209295/ce1d47eb-01bb-41d8-88d4-e07828aea825)
 
