@@ -36,7 +36,6 @@
 <li>test_result/ 包含前端页面和测试结果。</li>
 <li>log.log 为项目运行日志。</li>
 <li>task.sqlite 为sqllite数据库，包含了每个任务的基本详情也是唯一的dao对象。</li>
-<li>其他可执行文件为不同平台的可执行文件。</li>
 </ul>
 
 ![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/852cda82-058b-4832-9daf-8074c1a7bb6b)
