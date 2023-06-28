@@ -8,7 +8,7 @@
 
 <h2>源码地址：https://github.com/1033866383/app_performance_private/tree/perf-orange-cat</h2>
     <h2>
-        安装：pip install performancetest 
+        安装：pip install -U performancetest 
         <br/><br/>
             启动：python -m performancetest.web.main   
         <br/><br/>
