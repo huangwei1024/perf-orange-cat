@@ -7,7 +7,16 @@
 <h2>演示地址：http://112.126.75.188/</h2>
 
 <h2>源码地址：https://github.com/1033866383/app_performance_private/tree/perf-orange-cat</h2>
-
+    <h2>
+        安装：pip install performancetest 
+        <br/><br/>
+            启动：python -m performancetest.web.main   
+        <br/><br/>
+        启动后访问：http://localhost/ 即可开始Android/IOS性能测试 
+        <br/><br/>
+        API文档访问：http://localhost/redoc/
+        <br/><br/>
+    </h2>
 <h2>简介</h2>
 <ul>
     <li>替代perfdog等客户端性能测试工具</li>
