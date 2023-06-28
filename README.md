@@ -16,6 +16,7 @@
         <br/><br/>
         API文档访问：http://localhost/redoc/
         <br/><br/>
+        环境要求：python3.9+ 如果python版本有问题可以使用pyenv:https://github.com/pyenv/pyenv去做环境隔离
     </h2>
 <h2>简介</h2>
 <ul>
