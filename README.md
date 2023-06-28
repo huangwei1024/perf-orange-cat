@@ -40,6 +40,8 @@
 ![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/852cda82-058b-4832-9daf-8074c1a7bb6b)
 
 <h2>使用教程</h2>
+建议使用上方的 pip install 的方式装包启动。 
+<br/>
 1.运行exe， Pyinstaller打包的项目首次启动时可能会稍微慢一点。
 
 ![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/fc99180b-1e26-47e4-87a6-cc3db7d9b9e8)
