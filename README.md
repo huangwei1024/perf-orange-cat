@@ -42,13 +42,14 @@
 <h2>使用教程</h2>
 建议使用上方的 pip install 的方式装包启动。 
 <br/>
-1.运行exe， Pyinstaller打包的项目首次启动时可能会稍微慢一点。
+1.pip install -U performancetest 
 
-![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/fc99180b-1e26-47e4-87a6-cc3db7d9b9e8)
+![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/b0d566fd-cf1e-4fd2-85eb-21f1e3762619)
 
-2.此时项目已经启动了。
 
-![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/baae938d-bf01-4f3b-a5e6-0309a718cf2d)
+2.python -m performancetest.web.main  此时项目已经启动了。
+
+![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/38f32ab0-a967-4cc4-963a-e57320e9da11)
 
 3.访问http://localhost/。
 
