@@ -61,7 +61,7 @@
 
 默认页面：
 
-![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/100c40ee-499f-437f-8f98-e4469f946e6e)
+![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/6b7d1e37-d488-4dda-b8b3-4e89890edf3f)
 
 4.点击上方红色按钮，创建新的性能测试任务。此时会开始自动检测你电脑上连接到Android/Ios设备。
 <h3>需要注意的点：Android设备需要打开开发者模式，部分设备可能需要选择传输模式为传输文件！</h3>
