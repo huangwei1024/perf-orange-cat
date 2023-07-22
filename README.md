@@ -9,9 +9,6 @@
 <h2>源码地址：
     https://github.com/1033866383/perf-orange-cat
     <br/>
-    or 
-    <br/>
-    https://github.com/1033866383/app_performance_private/tree/perf-orange-cat</h2>
     <h2>
         安装：pip install -U performancetest 
         <br/><br/>
@@ -25,6 +22,8 @@
         去做环境隔离
         <br/><br/>
         修改或商用注意本项目的开源协议
+        <br/><br/>
+        后续会增加windows，mac，linux 等pc平台上的应用的性能测试，增肌对比任务，选择测试场景打标签等功能。
         <br/><br/>
     </h2>
 <h2>简介</h2>
