@@ -77,7 +77,7 @@
 
 ![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/78634fab-7225-4226-bca1-fdd4884abaec)
 
-5.下拉选中应用，选中后会自动展示版本号，随后点击创建任务。
+5.点击手机图标选中手机后，下拉选中应用，选中后会自动展示版本号，随后点击创建任务。
 
 ![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/ffbb3ef7-0623-44fd-97a2-f9e17135173b)
 
