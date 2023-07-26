@@ -81,7 +81,7 @@ class ParsFPSInfo(object):
                         ParsFPSInfo.PHONE_REAL_TIME_INTERVAL = int(time.time()) - int(first_time)
                     logger.info(
                         "时间间隔 {0} {1} {2} {3}".format(ParsFPSInfo.PHONE_REAL_TIME_INTERVAL, time.time(), first_time,
-                                                      ParsFPSInfo.FPS_queue))
+                                                          ParsFPSInfo.FPS_queue))
                 else:
                     ParsFPSInfo.FPS_queue = []
                     ParsFPSInfo.PHONE_REAL_TIME_INTERVAL = None
@@ -287,7 +287,9 @@ class FPSMonitor(Monitor):
         activity_name = ''
         activity_line = ''
         try:
-            dumpsys_result = G.device.adb.raw_shell('dumpsys SurfaceFlinger --list | {} {}'.format(('grep', 'findstr')[platform.system() == "Windows"], G.device.package)).decode()
+            dumpsys_result = G.device.adb.raw_shell(
+                'dumpsys SurfaceFlinger --list | {} {}'.format(('grep', 'findstr')[platform.system() == "Windows"],
+                                                               G.device.package)).decode()
             dumpsys_result_list = dumpsys_result.split('\n')
             for line in dumpsys_result_list:
                 if line.startswith('SurfaceView') and line.find(G.device.package) != -1:
@@ -339,8 +341,9 @@ class FPSMonitor(Monitor):
             G.suspend_event.wait()  # 暂停时会暂停在这里
             FPS_list = []
             try:
-                logger.debug("---------------开始获取手机fps信息, into _collect_package_FPS_thread loop thread is : " + str(
-                    threading.current_thread().name))
+                logger.debug(
+                    "---------------开始获取手机fps信息, into _collect_package_FPS_thread loop thread is : " + str(
+                        threading.current_thread().name))
                 before = time.time()
                 try:
                     FPS_info_FPS, FPS_info_lag_number, FPS_full_number = self.get_FPS_info()

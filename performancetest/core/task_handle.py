@@ -5,12 +5,12 @@ import traceback
 from builtins import *
 import datetime
 from multiprocessing.context import Process
-from airtest.core.android.adb import ADB
 from performancetest.core.base.actuator import Actuator
 from performancetest.core.cpu import CpuMonitor
 from performancetest.core.device import AndroidDevice, IosDevice
 from performancetest.core.devicebattery import DeviceBatteryMonitor
 from performancetest.core.fps import FPSMonitor
+from performancetest.core.network import NetworkMonitor
 from performancetest.core.global_data import GlobalData as G, logger
 from performancetest.core.gpu import GpuMonitor
 from performancetest.core.iosperf import IosPerfMonitor
@@ -65,6 +65,7 @@ class TaskHandle(Process, Actuator):
                 FPSMonitor(os.path.join(self.save_dir, "fps.csv")).start()
                 GpuMonitor(os.path.join(self.save_dir, "gpu.csv")).start()
                 DeviceBatteryMonitor(os.path.join(self.save_dir, "devicebattery.csv")).start()
+                NetworkMonitor(os.path.join(self.save_dir, "network.csv")).start()
                 SnapshotMonitor(os.path.join(self.save_dir, "picture_log"), self.serialno, self.server_addr).start()
             elif self.device_platform == "ios":
                 try:

@@ -1,7 +1,6 @@
 # coding=utf-8
 
 import csv
-import os
 import threading
 import time
 import traceback
@@ -9,22 +8,6 @@ from builtins import *
 
 from performancetest.core.base.monitor import Monitor
 from performancetest.core.global_data import GlobalData as G, logger
-
-
-class ParseGpuinfo(object):
-    def __init__(self, package, gpuinfo, sdkversion=None):
-        self.gpuinfo = gpuinfo
-        self.package = package
-        self.sdkversion = sdkversion
-        self.gpur_rate = self.get_gpu_rate()
-
-    def get_gpu_rate(self):
-        for pidinfo in self.gpuinfo.split(os.linesep):
-            if self.package in pidinfo:
-                pidinfo = pidinfo.split()
-                if pidinfo[-1] == self.package:
-                    return pidinfo[4].replace("%", '')
-        return ''
 
 
 class GpuMonitor(Monitor):

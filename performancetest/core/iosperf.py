@@ -8,7 +8,7 @@ import traceback
 from builtins import *
 
 from performancetest.core.base.monitor import Monitor
-from performancetest.core.global_data import logger, GlobalData
+from performancetest.core.global_data import logger
 
 
 class IosPerfMonitor(Monitor):

@@ -10,7 +10,7 @@ from performancetest.core.base.monitor import Monitor
 from performancetest.core.global_data import GlobalData as G, logger
 
 
-class ParsMeminfo(object):
+class ParsMemInfo(object):
     RE_TOTAL_PSS = re.compile(r'TOTAL\s+(\d+)')
 
     def __init__(self, meminfo):
@@ -39,7 +39,7 @@ class MemoryMonitor(Monitor):
             return mem_info
         else:
             mem_info = G.device.adb.raw_shell("dumpsys meminfo {}".format(G.device.package)).decode()
-            mem_info = str(ParsMeminfo(mem_info).taltol_pss)
+            mem_info = str(ParsMemInfo(mem_info).taltol_pss)
         logger.info("当前获取到的mem信息是{}".format(mem_info))
         return mem_info
 
@@ -68,8 +68,9 @@ class MemoryMonitor(Monitor):
             G.suspend_event.wait()  # 暂停时会暂停在这里
             mem_list = []
             try:
-                logger.debug("---------------开始获取手机内存信息, into _collect_package_mem_thread loop thread is : " + str(
-                    threading.current_thread().name))
+                logger.debug(
+                    "---------------开始获取手机内存信息, into _collect_package_mem_thread loop thread is : " + str(
+                        threading.current_thread().name))
                 before = time.time()
                 mem_list.append(before)
                 # 为了mem值的准确性，将采集的时间间隔放在top命令中了

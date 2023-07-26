@@ -48,7 +48,8 @@ class SnapshotMonitor(Monitor):
             G.suspend_event.wait()  # 暂停时会暂停在这里
             try:
                 logger.debug(
-                    "---------------开始截图, _collect_screenshot loop thread is : " + str(threading.current_thread().name))
+                    "---------------开始截图, _collect_screenshot loop thread is : " + str(
+                        threading.current_thread().name))
                 before = time.time()
                 self.snapshot(self.save_dir.joinpath(str(int(before * 1000)) + ".jpg"))
                 after = time.time()
@@ -100,7 +101,8 @@ class IosSibSnapshotMonitor(Monitor):
         while G.stop_event.is_set():
             try:
                 logger.debug(
-                    "---------------开始截图, _collect_screenshot loop thread is : " + str(threading.current_thread().name))
+                    "---------------开始截图, _collect_screenshot loop thread is : " + str(
+                        threading.current_thread().name))
                 before = time.time()
                 self.snapshot(self.save_dir.joinpath(str(int(before * 1000)) + ".jpg"))
                 after = time.time()

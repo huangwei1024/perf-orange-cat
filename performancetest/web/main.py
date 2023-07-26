@@ -131,7 +131,8 @@ def run_task(request: Request, task: TaskEntity):
         os.makedirs(file_dir)
     return_task_id = None
     with connect() as session:
-        task_running_count = session.query(Task).filter(Task.host == client_host).filter(Task.serialno == task.serialno).filter(
+        task_running_count = session.query(Task).filter(Task.host == client_host).filter(
+            Task.serialno == task.serialno).filter(
             Task.status != 2).count()
         if task_running_count > 0:
             raise Exception("当前设备仍有任务在进行,无法创建新任务")
@@ -192,6 +193,7 @@ async def delete_task(request: Request, id: int):
                 traceback.print_exc()
     return {"code": 200}
 
+
 @app.get("/get_task_status/")
 def get_task_status(request: Request, id: int):
     client_host: str = request.client.host
@@ -237,6 +239,7 @@ async def get_username(request: Request):
 
 if __name__ == "__main__":
     import uvicorn
+
     multiprocessing.freeze_support()
     # uvicorn.run(app, host="0.0.0.0", port=80, log_level="debug")
     uvicorn.run("performancetest.web.main:app", host="0.0.0.0", port=80, log_level="debug", workers=10, reload=True)

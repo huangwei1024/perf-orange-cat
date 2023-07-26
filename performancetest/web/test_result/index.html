@@ -142,6 +142,7 @@
 
 
 
+
     </style>
 </head>
 <body>
@@ -260,42 +261,45 @@
                     </div>
                     <br/>
                     <div class="chartdiv" style="min-height: 18.75rem;">
-						<el-card style="min-height: 18.75rem;">
-							<el-switch
-							v-model="is_load_img"
-							active-text="实时显示屏幕"
-							inactive-text="">
-							</el-switch>
-                    		<br/>
-							<div v-for="typeItem in monitorTypes">
-								<div>
+                        <el-card style="min-height: 18.75rem;">
+                            <el-switch
+                                    v-model="is_load_img"
+                                    active-text="实时显示屏幕"
+                                    inactive-text="">
+                            </el-switch>
+                            <br/>
+                            <div v-for="typeItem in monitorTypes">
+                                <div>
                                     <hr/>
-									<el-descriptions column="3">
-										<el-descriptions-item label="最大值" :label-style="{fontWeight: 'bold'}">
-											{{allReportData[typeItem] ? allReportData[typeItem].max: 0}}
-										</el-descriptions-item>
-										<el-descriptions-item label="最小值" :label-style="{fontWeight: 'bold'}">
-											{{allReportData[typeItem]? allReportData[typeItem].min: 0}}
-										</el-descriptions-item>
-										<el-descriptions-item label="平均值" :label-style="{fontWeight: 'bold'}">
-											{{allReportData[typeItem]? allReportData[typeItem].avg: 0}} 
-										</el-descriptions-item>
-										<el-descriptions-item label="卡顿数" :label-style="{fontWeight: 'bold'}" v-if="typeItem === 'fps'">
-											{{allReportData[typeItem] ? allReportData[typeItem].jank_number_sum: 0}}
-										</el-descriptions-item>
-										<el-descriptions-item label="强卡顿数" :label-style="{fontWeight: 'bold'}" v-if="typeItem === 'fps'">
-											{{allReportData[typeItem]? allReportData[typeItem].big_jank_number_sum: 0}}
-										</el-descriptions-item>
-										<el-descriptions-item label="总卡顿率" :label-style="{fontWeight: 'bold'}" v-if="typeItem === 'fps'">
-											{{allReportData[typeItem]? allReportData[typeItem].all_jank_rate: 0}} % 
-										</el-descriptions-item>
-										
-									</el-descriptions>
-								</div>
-								<div :id="typeItem" :key="typeItem" class="chartitem"
-                                 style=" width: 100%;height: 18.75rem;" >
-                            	</div>
-							</div>
+                                    <el-descriptions column="3">
+                                        <el-descriptions-item label="最大值" :label-style="{fontWeight: 'bold'}">
+                                            {{allReportData[typeItem] ? allReportData[typeItem].max: 0}}
+                                        </el-descriptions-item>
+                                        <el-descriptions-item label="最小值" :label-style="{fontWeight: 'bold'}">
+                                            {{allReportData[typeItem]? allReportData[typeItem].min: 0}}
+                                        </el-descriptions-item>
+                                        <el-descriptions-item label="平均值" :label-style="{fontWeight: 'bold'}">
+                                            {{allReportData[typeItem]? allReportData[typeItem].avg: 0}}
+                                        </el-descriptions-item>
+                                        <el-descriptions-item label="卡顿数" :label-style="{fontWeight: 'bold'}"
+                                                              v-if="typeItem === 'fps'">
+                                            {{allReportData[typeItem] ? allReportData[typeItem].jank_number_sum: 0}}
+                                        </el-descriptions-item>
+                                        <el-descriptions-item label="强卡顿数" :label-style="{fontWeight: 'bold'}"
+                                                              v-if="typeItem === 'fps'">
+                                            {{allReportData[typeItem]? allReportData[typeItem].big_jank_number_sum: 0}}
+                                        </el-descriptions-item>
+                                        <el-descriptions-item label="总卡顿率" :label-style="{fontWeight: 'bold'}"
+                                                              v-if="typeItem === 'fps'">
+                                            {{allReportData[typeItem]? allReportData[typeItem].all_jank_rate: 0}} %
+                                        </el-descriptions-item>
+
+                                    </el-descriptions>
+                                </div>
+                                <div :id="typeItem" :key="typeItem" class="chartitem"
+                                     style=" width: 100%;height: 18.75rem;">
+                                </div>
+                            </div>
                         </el-card>
                     </div>
                 </div>
@@ -988,6 +992,7 @@
         },
 			}
 		})
+
 
 
 

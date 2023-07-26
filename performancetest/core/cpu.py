@@ -11,12 +11,12 @@ from performancetest.core.base.monitor import Monitor
 from performancetest.core.global_data import GlobalData as G, logger
 
 
-class ParseCpuinfo(object):
+class ParseCpuInfo(object):
     def __init__(self, package, cpuinfo, sdkversion=None):
         self.cpuinfo = cpuinfo
         self.package = package
         self.sdkversion = sdkversion
-        self.cpur_rate = self.get_cpu_rate()
+        self.cpu_rate = self.get_cpu_rate()
 
     def get_cpu_rate(self):
         for pidinfo in self.cpuinfo.split(os.linesep):
@@ -40,7 +40,7 @@ class CpuMonitor(Monitor):
             cpu_info = cpu_info.strip()
         else:
             cpu_info = G.device.adb.raw_shell("top -n 1".format(G.device.package_pid)).decode()
-            cpu_info = ParseCpuinfo(G.device.package, cpu_info, G.device.sdkversion).cpur_rate
+            cpu_info = ParseCpuInfo(G.device.package, cpu_info, G.device.sdkversion).cpu_rate
         logger.info("获取到的cpu信息是：{}".format(cpu_info))
         return cpu_info
 
