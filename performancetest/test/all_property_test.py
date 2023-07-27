@@ -7,14 +7,12 @@ from performancetest.core.devicebattery import DeviceBatteryMonitor
 from performancetest.core.fps import FPSMonitor
 from performancetest.core.global_data import GlobalData as G
 from performancetest.core.gpu import GpuMonitor
-from performancetest.core.logcat import Logcat
 from performancetest.core.memory import MemoryMonitor
-
+from performancetest.core.network import NetworkMonitor
 
 def start():
     G.device = AndroidDevice(serialno="emulator-5554", server_addr=["localhost", "5037"],
                              package="com.road7.ddtdmxandroid.ld", save_dir="localhost")
-    G.logcat = Logcat(package="com.road7.ddtdmxandroid.ld", save_dir="../core/")
     time.sleep(1)
     G.device.start_app()
     CpuMonitor("./cpu.txt").start()
@@ -22,7 +20,7 @@ def start():
     FPSMonitor("./FPS.txt").start()
     GpuMonitor("./gpu.txt").start()
     DeviceBatteryMonitor("./deviceBattery.txt").start()
-
+    NetworkMonitor("./network.txt").start()
 
 def stop():
     G.stop_event.clear()

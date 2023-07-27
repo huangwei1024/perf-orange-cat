@@ -98,15 +98,3 @@ class CpuMonitor(Monitor):
                 traceback.print_exc()
                 G.device.get_pid()
         logger.debug("cpu stop event is set or timeout")
-
-
-if __name__ == "__main__":
-    from device import AndroidDevice
-
-    G.device = AndroidDevice(serialno="emulator-5554", server_addr=["localhost", "5037"],
-                             package="com.road7.ddtdmxandroid.ld", save_dir="localhost")
-    G.device.start_app()
-    cpu = CpuMonitor("./cpu.txt")
-    cpu.start()
-    time.sleep(15)
-    cpu.stop()

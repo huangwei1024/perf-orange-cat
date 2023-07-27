@@ -37,6 +37,7 @@ class ParseNetworkInfo(object):
 
 class NetworkMonitor(Monitor):
     def __init__(self, save_file, test_time=-1, interval=1):
+        super().__init__()
         self.save_file = save_file
         self.test_time = test_time
         self.interval = interval
@@ -55,7 +56,7 @@ class NetworkMonitor(Monitor):
         return network_info
 
     def start(self):
-        super(NetworkMonitor, self).start()
+        super(Monitor, self).start()
 
     # 结束任务
     def stop(self):

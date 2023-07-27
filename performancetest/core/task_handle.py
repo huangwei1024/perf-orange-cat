@@ -90,6 +90,10 @@ class TaskHandle(Process, Actuator):
 
 
 if __name__ == '__main__':
+    task_process = TaskHandle(serialno="127.0.0.1:62001", server_addr=["localhost", 5037],
+                              package="com.wxbz.nativeh5.yzcw.yeshen", save_dir="localhost", task_id=1, device_platform="android")
+    task_process.start()
+    time.sleep(2 * 10)
     task_process = TaskHandle(serialno="00008110-0012148E1E8B801E", server_addr=["10.131.129.128", 9123],
                               package="com.netease.id5", save_dir="localhost", task_id=1, device_platform="ios")
     task_process.start()
