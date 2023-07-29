@@ -58,10 +58,15 @@ class DataCollect(object):
             file_path = os.path.join(self.file_dir_path, "fps.csv")
         return self.__read_csv_file(file_path=file_path)
 
+    def __read_network(self, file_path=None):
+        if not file_path:
+            file_path = os.path.join(self.file_dir_path, "network.csv")
+        return self.__read_csv_file(file_path=file_path)
+
     # 监控类型对应的读取方法
     __monitortype_func = {"cpu": __read_cpu, "memory": __read_memory, "fps": __read_fps,
                           "gpu": __read_gpu, "devicebatterytemperature": __read_device_temperature,
-                          "devicebatterylevel": __read_device_battery_level}
+                          "devicebatterylevel": __read_device_battery_level, "network": __read_network}
 
     # 读数据的方法使用：DataCollect.read_data(1, "cpu", "memory", "fps")
     @classmethod
@@ -228,8 +233,27 @@ class DataCollect(object):
                 res_dict["all_jank_rate"] = 0
                 logger.error(e)
             # fps值需要去掉开头一个和最后一个
-            # res_dict["time"] = res_dict["time"][1: -2] if res_dict.get("time") else []
-            # res_dict["value"] = res_dict["value"][1: -2] if res_dict.get("value") else []
+        elif monitor_name == "network":
+            try:
+                res_dict["realtime_downFlow"] = res_dict["value"]
+                del res_dict["value"]
+                del res_dict["max"]
+                del res_dict["min"]
+                del res_dict["avg"]
+                res_dict["realtime_upFlow"] = np.round(csv_data[:, 2], 2).tolist()
+                res_dict["sum_realtimeFlow"] = np.round(csv_data[:, 3], 2).tolist()
+                if csv_data.shape[1] > 4:
+                    res_dict["accumulate_downFlow"] = np.round(csv_data[:, 4], 2).tolist()
+                    res_dict["accumulate_upFlow"] = np.round(csv_data[:, 5], 2).tolist()
+                    res_dict["sum_accumFlow"] = np.round(csv_data[:, 6], 2).tolist()
+            except:
+                traceback.print_exc()
+                res_dict["realtime_downFlow"] = res_dict["value"]
+                res_dict["realtime_upFlow"] = []
+                res_dict["sum_realtimeFlow"] = []
+                res_dict["accumulate_downFlow"] = []
+                res_dict["accumulate_upFlow"] = []
+                res_dict["sum_accumFlow"] = []
         return res_dict
 
     @staticmethod
