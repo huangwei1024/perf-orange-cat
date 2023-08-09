@@ -30,7 +30,8 @@ API文档访问：http://localhost/redoc/
 <ul>
     <li>替代perfdog等客户端性能测试工具</li>
     <li>支持Android/IOS平台上应用的性能数据测试，包含游戏和视频类app的性能测试</li>
-    <li>支持指标包含:cpu,memory,fps,gpu,温度,电量，以及他们的最大值，最小值，平均值</li>
+    <li>支持指标包含:cpu,memory,fps,gpu,温度,电量，流量以及他们的最大值，最小值，平均值</li>
+    <li>cpu包含top版cpu, procstat版应用cpu, procstat版系统cpu</li>
     <li>fps指标中包含：卡顿（jank），强卡顿（big jank），卡顿率等指标,等指标</li>
     <li>数据结果准确，与perfdog一致</li>
     <li>可用实时记录设备画面，点击图片或者点击图标上的点可用跳转到对对应的场景。</li>
@@ -83,15 +84,21 @@ iTunes</h3>
 
 6.点击完创建任务后页面会自动刷新，并开始性能测试，如果打开实时显示屏幕按钮，则上方的图片会实时展示手机屏幕的情况。左侧的是时间按钮是此任务的开始时间也代表此任务的名称，IOS的fps下方的卡顿，强卡顿并不会计算，Android则会真实计算，计算方式与perfdog一致。
 
-![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/c55b46c6-3903-421a-a9a2-9caf1366f0f7)
+![微信图片_20230810000513](https://github.com/1033866383/perf-orange-cat/assets/56209295/6021212f-d68c-431c-b4a0-50ec464f951e)
+![微信图片_20230810000547](https://github.com/1033866383/perf-orange-cat/assets/56209295/b7a33e0e-7a9f-42d5-9dd7-571684ba428d)
 
-![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/6de2339e-59a5-4978-9730-007d015154e1)
 
 7.最后点击停止任务，任务即可停止，任务停止之后可用删除任务，删除任务是物理删除会把所有的任务数据删除谨慎删除。
 
 ![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/a2f65fca-2256-4fac-a1a3-79fb8899ea0f)
 
 IOS性能测试使用的是tidevice工具：https://github.com/alibaba/taobao-iphone-device
+
+8.Android 多类型cpu, 流量新功能演示：
+![微信图片_20230810000255](https://github.com/1033866383/perf-orange-cat/assets/56209295/da98d4bc-9784-4e75-8a3c-a8b9e94d02bd)
+
+![微信图片_20230810000359](https://github.com/1033866383/perf-orange-cat/assets/56209295/bb88db4f-2013-4937-b1f2-cd1510adc9d1)
+
 
 风险提示：
 <br/>
