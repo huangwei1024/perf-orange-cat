@@ -354,16 +354,6 @@
                 </el-option>
             </el-select>
             版本号： {{version}}
-            <!-- <div style="float: right;">
-                <a href="https://github.com/1033866383/app_performance_private/releases/download/online/win-start.exe"
-                   download>
-                    <el-button type="text">下载 windows sdk</el-button>
-                </a>
-                <a href="https://github.com/1033866383/app_performance_private/releases/download/online/mac-start.exe"
-                   download>
-                    <el-button type="text">下载 mac sdk</el-button>
-                </a>
-            </div> -->
         </div>
         <span slot="footer" class="dialog-footer">
 				<el-button @click="createtaskdialogVisible = false">取 消</el-button>
@@ -669,6 +659,7 @@
 															.replace("memory","MEMORY")
 															.replace("gpu","GPU")
 															.replace("fps","FPS")
+															.replace("network", "流量")
 					this.chartOption.xAxis.data = this.allReportData[chartName].relative_time
 					this.chartOption.series.data = this.allReportData[chartName].value
 					this.chartOption.xAxis.realtime = this.allReportData[chartName].time

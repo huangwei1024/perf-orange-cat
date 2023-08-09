@@ -239,8 +239,29 @@ async def get_username(request: Request):
 
 if __name__ == "__main__":
     import uvicorn
-
     multiprocessing.freeze_support()
     # uvicorn.run(app, host="0.0.0.0", port=80, log_level="debug")
     uvicorn.run("performancetest.web.main:app", host="0.0.0.0", port=80, log_level="debug", workers=10, reload=True)
     logger.info("服务启动成功请访问: http://localhost:80")
+    import sys
+    from PyQt5.QtWidgets import QApplication, QMainWindow
+    from PyQt5.QtWebEngineWidgets import QWebEngineView
+
+    class MainWindow(QMainWindow):
+        def __init__(self):
+            super().__init__()
+
+            self.webview = QWebEngineView(self)
+            self.setCentralWidget(self.webview)
+
+            # Load the HTML file containing the Vue app
+            with open('test_result/index.html', 'r', encoding="utf-8") as file:
+                html_content = file.read()
+                self.webview.setHtml(html_content)
+
+
+    if __name__ == '__main__':
+        app = QApplication(sys.argv)
+        window = MainWindow()
+        window.show()
+        sys.exit(app.exec_())
