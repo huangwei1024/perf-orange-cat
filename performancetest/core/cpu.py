@@ -34,6 +34,67 @@ class CpuMonitor(Monitor):
         self.test_time = test_time
         self.interval = interval
 
+    def getprocessCpuStat(self):
+        """get the cpu usage of a process at a certain time"""
+        cmd = 'cat /proc/{}/stat'.format(G.device.get_pid())
+        result = G.device.adb.raw_shell(cmd).decode()
+        r = re.compile("\\s+")
+        toks = r.split(result)
+        processCpu = float(toks[13]) + float(toks[14]) + float(toks[15]) + float(toks[16])
+        return processCpu
+
+    def getTotalCpuStat(self):
+        """get the total cpu usage at a certain time"""
+        cmd = 'cat /proc/stat | grep ^cpu'
+        print(cmd)
+        result = G.device.adb.raw_shell(cmd).decode()
+        r = re.compile(r'(?<!cpu)\d+')
+        toks = r.findall(result)
+
+        totalCpu = 0
+        for i in range(1, 9):
+            totalCpu += float(toks[i])
+        return float(totalCpu)
+
+    def getCpuCores(self):
+        """get Android cpu cores"""
+        cmd = 'cat /sys/devices/system/cpu/online'
+        result = G.device.adb.raw_shell(cmd).decode()
+        try:
+            nums = int(result.split('-')[1]) + 1
+        except:
+            nums = 1
+        return nums
+
+    def getSysCpuStat(self):
+        """get the total cpu usage at a certain time"""
+        cmd = 'cat /proc/stat | grep ^cpu'
+        result = G.device.adb.raw_shell(cmd).decode()
+        r = re.compile(r'(?<!cpu)\d+')
+        toks = r.findall(result)
+        ileCpu = float(toks[4])
+        sysCpu = self.getTotalCpuStat() - ileCpu
+        return sysCpu
+
+    def getAndroidCpuRate(self):
+        """get the Android cpu rate of a process"""
+        try:
+            processCpuTime_1 = self.getprocessCpuStat()
+            totalCpuTime_1 = self.getTotalCpuStat()
+            sysCpuTime_1 = self.getSysCpuStat()
+            time.sleep(0.5)
+            processCpuTime_2 = self.getprocessCpuStat()
+            totalCpuTime_2 = self.getTotalCpuStat()
+            sysCpuTime_2 = self.getSysCpuStat()
+            appCpuRate = round(float((processCpuTime_2 - processCpuTime_1) / (totalCpuTime_2 - totalCpuTime_1) * 100),
+                               2)
+            sysCpuRate = round(float((sysCpuTime_2 - sysCpuTime_1) / (totalCpuTime_2 - totalCpuTime_1) * 100), 2)
+        except Exception as e:
+            appCpuRate, sysCpuRate = 0, 0
+            logger.exception(e)
+            traceback.print_exc()
+        return appCpuRate, sysCpuRate
+
     def get_cpuinfo(self):
         if G.device.sdkversion >= 25:
             cpu_info = G.device.adb.raw_shell("top -n 1 -p {} -o %CPU -b -q".format(G.device.package_pid)).decode()
@@ -60,7 +121,7 @@ class CpuMonitor(Monitor):
         按照指定频率，循环搜集cpu的信息
         :return:
         '''
-        cpu_title = ["timestamp", "cpu%"]
+        cpu_title = ["timestamp", "cpu%", "proc_cpu%", "proc_sys_cpu%"]
         cpu_file = self.save_file
         with open(cpu_file, 'w+') as df:
             csv.writer(df, lineterminator='\n').writerow(cpu_title)
@@ -76,13 +137,16 @@ class CpuMonitor(Monitor):
                 cpu_list.append(before)
                 # 为了cpu值的准确性，将采集的时间间隔放在top命令中了
                 cpu_info = self.get_cpuinfo()
+                proc_app_cpu, proc_sys_cpu = self.getAndroidCpuRate()
                 cpu_list.append(cpu_info)
+                cpu_list.append(proc_app_cpu)
+                cpu_list.append(proc_sys_cpu)
                 after = time.time()
                 time_consume = after - before
                 logger.debug(
                     "============== time consume for cpu info : {0}, value {1}".format(time_consume, cpu_info))
                 if cpu_info == None or cpu_info == '' or float(cpu_info) == 0:
-                    logger.error("can't get cpu info")
+                    logger.error("top can't get cpu info")
                     G.device.get_pid()
                     logger.info("重新获取pid,重启logcat")
                     # 取消获取不到跳过，默认给0

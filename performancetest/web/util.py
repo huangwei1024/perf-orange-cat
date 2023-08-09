@@ -145,6 +145,10 @@ class DataCollect(object):
                     _, host = os.path.split(task_dir)
                     result_dict["public_imgs"] = cls.get_public_imgs(img_path_dir, public_start_time,
                                                                      public_end_time, task_name_int, host)
+        try:
+            result_dict = cls.format_data(result_dict, monitortypes)
+        except:
+            traceback.print_exc()
         return result_dict
 
     @staticmethod
@@ -240,12 +244,14 @@ class DataCollect(object):
                 del res_dict["max"]
                 del res_dict["min"]
                 del res_dict["avg"]
-                res_dict["realtime_upFlow"] = np.round(csv_data[:, 2], 2).tolist()
-                res_dict["sum_realtimeFlow"] = np.round(csv_data[:, 3], 2).tolist()
+                res_dict["realtime_upFlow"] = head_time_value + np.round(csv_data[:, 2], 2).tolist() + end_time_value
+                res_dict["sum_realtimeFlow"] = head_time_value + np.round(csv_data[:, 3], 2).tolist() + end_time_value
                 if csv_data.shape[1] > 4:
-                    res_dict["accumulate_downFlow"] = np.round(csv_data[:, 4], 2).tolist()
-                    res_dict["accumulate_upFlow"] = np.round(csv_data[:, 5], 2).tolist()
-                    res_dict["sum_accumFlow"] = np.round(csv_data[:, 6], 2).tolist()
+                    res_dict["accumulate_downFlow"] = head_time_value + np.round(csv_data[:, 4],
+                                                                                 2).tolist() + end_time_value
+                    res_dict["accumulate_upFlow"] = head_time_value + np.round(csv_data[:, 5],
+                                                                               2).tolist() + end_time_value
+                    res_dict["sum_accumFlow"] = head_time_value + np.round(csv_data[:, 6], 2).tolist() + end_time_value
             except:
                 traceback.print_exc()
                 res_dict["realtime_downFlow"] = res_dict["value"]
@@ -254,6 +260,26 @@ class DataCollect(object):
                 res_dict["accumulate_downFlow"] = []
                 res_dict["accumulate_upFlow"] = []
                 res_dict["sum_accumFlow"] = []
+        elif monitor_name == "cpu":
+            try:
+                proc_app_cpu = csv_data[:, 2].tolist()
+                proc_sys_cpu = csv_data[:, 3].tolist()
+                res_dict["proc_app_cpu_max"] = max(proc_app_cpu)
+                res_dict["proc_sys_cpu_sum"] = max(proc_sys_cpu)
+                proc_app_cpu = head_time_value + proc_app_cpu + end_time_value
+                proc_sys_cpu = head_time_value + proc_sys_cpu + end_time_value
+                res_dict["proc_app_cpu"] = proc_app_cpu
+                res_dict["proc_sys_cpu"] = proc_sys_cpu
+            except Exception as e:
+                res_dict["full_number"] = 0
+                res_dict["jank_number"] = []
+                res_dict["big_jank_number"] = []
+                res_dict["ftimege100"] = []
+                res_dict["jank_number_sum"] = 0
+                res_dict["big_jank_number_sum"] = 0
+                res_dict["all_jank_rate"] = 0
+                logger.error(e)
+            # fps值需要去掉开头一个和最后一个
         return res_dict
 
     @staticmethod
@@ -261,3 +287,100 @@ class DataCollect(object):
         minutes = str(time_data_collect // 60).zfill(2)
         seconds = str(time_data_collect % 60).zfill(2)
         return f"{minutes}:{seconds}"
+
+    @classmethod
+    def format_data(cls, perf_data, monitortypes):
+        min_time = int(perf_data["public_start_time"])
+        new_time = list(range(int(perf_data["public_start_time"]), int(perf_data["public_end_time"]) + 1))
+        monitors = [key for key in list(perf_data.keys()) if key in monitortypes]
+        for monitor in monitors:
+            if monitor == "fps" and monitor in perf_data:
+                existing_time = perf_data[monitor]['time']
+                existing_value = perf_data[monitor]['value']
+                existing_jank_number = perf_data[monitor]['jank_number']
+                existing_big_jank_number = perf_data[monitor]['big_jank_number']
+                existing_ftimege100 = perf_data[monitor]['ftimege100']
+                new_value = ['-'] * len(new_time)
+                new_jank_number = ['-'] * len(new_time)
+                new_big_jank_number = ['-'] * len(new_time)
+                new_ftimege100 = ['-'] * len(new_time)
+                for i, t in enumerate(existing_time):
+                    new_value[int(t) - int(min_time)] = existing_value[i]
+                    if existing_jank_number:
+                        new_jank_number[int(t) - int(min_time)] = existing_jank_number[i]
+                    if existing_big_jank_number:
+                        new_big_jank_number[int(t) - int(min_time)] = existing_big_jank_number[i]
+                    if existing_ftimege100:
+                        new_ftimege100[int(t) - int(min_time)] = existing_ftimege100[i]
+                perf_data[monitor]['time'] = new_time
+                perf_data[monitor]['value'] = new_value
+                perf_data[monitor]['jank_number'] = new_jank_number
+                perf_data[monitor]['big_jank_number'] = new_big_jank_number
+                perf_data[monitor]['ftimege100'] = new_ftimege100
+            elif monitor == "network" and monitor in perf_data:
+                existing_time = perf_data[monitor]['time']
+                existing_realtime_downFlow = perf_data[monitor]['realtime_downFlow']
+                existing_realtime_upFlow = perf_data[monitor]['realtime_upFlow']
+                existing_sum_realtimeFlow = perf_data[monitor]['sum_realtimeFlow']
+                if "sum_accumFlow" in perf_data[monitor]:
+                    existing_sum_accumFlow = perf_data[monitor]['sum_accumFlow']
+                    existing_accumulate_upFlow = perf_data[monitor]['accumulate_upFlow']
+                    existing_accumulate_downFlow = perf_data[monitor]['accumulate_downFlow']
+                new_realtime_downFlow = ['-'] * len(new_time)
+                new_realtime_upFlow = ['-'] * len(new_time)
+                new_sum_realtimeFlow = ['-'] * len(new_time)
+                if "sum_accumFlow" in perf_data[monitor]:
+                    new_sum_accumFlow = ['-'] * len(new_time)
+                    new_accumulate_upFlow = ['-'] * len(new_time)
+                    new_accumulate_downFlow = ['-'] * len(new_time)
+                for i, t in enumerate(existing_time):
+                    if new_realtime_downFlow:
+                        new_realtime_downFlow[int(t) - int(min_time)] = existing_realtime_downFlow[i]
+                    if new_realtime_upFlow:
+                        new_realtime_upFlow[int(t) - int(min_time)] = existing_realtime_upFlow[i]
+                    if new_sum_realtimeFlow:
+                        new_sum_realtimeFlow[int(t) - int(min_time)] = existing_sum_realtimeFlow[i]
+                    if "sum_accumFlow" in perf_data[monitor]:
+                        if new_sum_accumFlow:
+                            new_sum_accumFlow[int(t) - int(min_time)] = existing_sum_accumFlow[i]
+                        if new_accumulate_upFlow:
+                            new_accumulate_upFlow[int(t) - int(min_time)] = existing_accumulate_upFlow[i]
+                        if new_accumulate_downFlow:
+                            new_accumulate_downFlow[int(t) - int(min_time)] = existing_accumulate_downFlow[i]
+                perf_data[monitor]['time'] = new_time
+                perf_data[monitor]['realtime_downFlow'] = new_realtime_downFlow
+                perf_data[monitor]['realtime_upFlow'] = new_realtime_upFlow
+                perf_data[monitor]['sum_realtimeFlow'] = new_sum_realtimeFlow
+            elif monitor == "cpu" and monitor in perf_data and "proc_app_cpu" in perf_data["cpu"]:
+                existing_time = perf_data[monitor]['time']
+                existing_value = perf_data[monitor]['value']
+                existing_proc_cpu = perf_data[monitor]['proc_app_cpu']
+                existing_proc_sys_cpu = perf_data[monitor]['proc_sys_cpu']
+                new_value = ['-'] * len(new_time)
+                new_proc_cpu = ['-'] * len(new_time)
+                new_proc_sys_cpu = ['-'] * len(new_time)
+                for i, t in enumerate(existing_time):
+                    new_value[int(t) - int(min_time)] = existing_value[i]
+                    new_proc_cpu[int(t) - int(min_time)] = existing_proc_cpu[i]
+                    new_proc_sys_cpu[int(t) - int(min_time)] = existing_proc_sys_cpu[i]
+                perf_data[monitor]['time'] = new_time
+                perf_data[monitor]['value'] = new_value
+                perf_data[monitor]['proc_app_cpu'] = new_proc_cpu
+                perf_data[monitor]['proc_sys_cpu'] = new_proc_sys_cpu
+            else:
+                if monitor in perf_data:
+                    existing_time = perf_data[monitor]['time']
+                    existing_value = perf_data[monitor]['value']
+                    new_value = ['-'] * len(new_time)
+                    for i, t in enumerate(existing_time):
+                        new_value[int(t) - int(min_time)] = existing_value[i]
+                    perf_data[monitor]['time'] = new_time
+                    perf_data[monitor]['value'] = new_value
+            try:
+                perf_data[monitor]["relative_time"] = [DataCollect.seconds_to_time(i - perf_data[monitor]['time'][0])
+                                                       for i in perf_data[monitor]['time']]
+            except Exception as e:
+                logger.error(e)
+                traceback.print_exc()
+                perf_data[monitor]["relative_time"] = []
+        return perf_data

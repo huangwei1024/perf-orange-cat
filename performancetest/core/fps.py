@@ -288,8 +288,7 @@ class FPSMonitor(Monitor):
         activity_line = ''
         try:
             dumpsys_result = G.device.adb.raw_shell(
-                'dumpsys SurfaceFlinger --list | {} {}'.format(('grep', 'findstr')[platform.system() == "Windows"],
-                                                               G.device.package)).decode()
+                'dumpsys SurfaceFlinger --list | {} {}'.format("grep", G.device.package)).decode()
             dumpsys_result_list = dumpsys_result.split('\n')
             for line in dumpsys_result_list:
                 if line.startswith('SurfaceView') and line.find(G.device.package) != -1:

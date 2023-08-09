@@ -363,7 +363,7 @@
 </div>
 
 <script>
-		new Vue({
+        new Vue({
 			el: '#app',
 			data: function() {
 				return {
@@ -393,7 +393,7 @@
 					allReportData: {}, //所有的结果集，自己查
 					current_click_time_for_mountout: null, //被点击的时间00:00,所有的图标使用相同的时间。
 					current_click_time_for_mountout_time: null, //被点击的真实时间
-					monitorTypes:  ["cpu", "memory", "fps", "gpu", "devicebatterylevel", "devicebatterytemperature"],
+					monitorTypes:  ["cpu", "memory", "fps", "gpu", "devicebatterylevel", "devicebatterytemperature", "network"],
 					ios_packages_info: [],
 					chartsMap:{
 						//chats对象的数据集
@@ -452,6 +452,7 @@
 						lineStyle: {
 							width: 0.5,
 						},
+            connectNulls: true,
 						showSymbol: false,//是否默认展示圆点
 						},
             dataZoom:[
@@ -468,7 +469,7 @@
 			},
 			async mounted() {
 				this.openLoading()
-                await this.get_username()
+        await this.get_username()
 				await this.get_all_task()
 				if(this.tasklist && this.tasklist.length > 0){
 				    this.taskid = this.tasklist[0].id
@@ -619,6 +620,9 @@
 							}else if(e === 'devicebatterytemperature'){
 								notShowPicName.push('电池温度')
 								showPicName.push(e)
+              }else if(e === 'network'){
+                notShowPicName.push('流量')
+								showPicName.push(e)
 							}else{
 								notShowPicName.push(e)
 								showPicName.push(e)
@@ -661,10 +665,46 @@
 															.replace("fps","FPS")
 															.replace("network", "流量")
 					this.chartOption.xAxis.data = this.allReportData[chartName].relative_time
-					this.chartOption.series.data = this.allReportData[chartName].value
 					this.chartOption.xAxis.realtime = this.allReportData[chartName].time
 					this.chartOption.yAxis.axisLabel.formatter = '{value}' +  this.findunit(chartName)
-					nowChart.setOption(this.chartOption)
+          if(chartName == "network" && this.allReportData[chartName]){
+            let alldata = []
+            for(let data of 
+              [
+                {"data": this.allReportData[chartName].sum_accumFlow, "name": "总流量"}, {"data": this.allReportData[chartName].accumulate_downFlow, "name": "总下载流量"}, {"data": this.allReportData[chartName].accumulate_upFlow, "name": "总下载流量"}, {"data": this.allReportData[chartName].sum_realtimeFlow, "name": "实时总流量"}, {"data": this.allReportData[chartName].realtime_downFlow, "name": "实时下载流量"}, {"data": this.allReportData[chartName].realtime_upFlow, "name": "实时上传流量"}
+              ]
+              ){
+              let obj = JSON.parse(JSON.stringify(this.chartOption.series)) 
+              obj.data = data["data"]
+              obj.name = data["name"]
+              alldata.push(obj)
+              console.log(JSON.stringify(obj))
+            }
+            let tmpchart = JSON.parse(JSON.stringify(this.chartOption)) 
+            tmpchart.series = alldata
+            tmpchart.legend = {show: true}
+            nowChart.setOption(tmpchart)
+          }else if(chartName == "cpu"){
+            let alldata = []
+            for(let data of 
+              [
+                {"data": this.allReportData[chartName].value, "name": "top获取cpu"}, {"data": this.allReportData[chartName].proc_app_cpu, "name": "proc-stat获取cpu"}, {"data": this.allReportData[chartName].proc_sys_cpu, "name": "proc-stat获取总cpu"}
+             ]
+              ){
+              let obj = JSON.parse(JSON.stringify(this.chartOption.series)) 
+              obj.data = data["data"]
+              obj.name = data["name"]
+              alldata.push(obj)
+              console.log(JSON.stringify(obj))
+            }
+            let tmpchart = JSON.parse(JSON.stringify(this.chartOption)) 
+            tmpchart.series = alldata
+            tmpchart.legend = {show: true}
+            nowChart.setOption(tmpchart)
+          }else{
+            this.chartOption.series.data = this.allReportData[chartName].value
+            nowChart.setOption(this.chartOption)
+          }
 					return nowChart
 				},
 				findunit(chartName){
@@ -674,7 +714,8 @@
 						"fps": "帧",
 						"memory": "M",
 						"devicebatterylevel": "%",
-						"devicebatterytemperature": "℃"
+						"devicebatterytemperature": "℃",
+            "network": "KB"
 					};
 					return units[chartName] || ""; // 如果没有找到对应的单位，返回一个空字符串
 				},

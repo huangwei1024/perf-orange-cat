@@ -7,8 +7,10 @@ import os
 import re
 import shutil
 import sys
+import threading
 import time
 import traceback
+import webbrowser
 from builtins import *
 
 import psutil
@@ -32,7 +34,7 @@ BASE_CSV_DIR = os.path.join(os.path.dirname(__file__), "test_result")
 if not os.path.exists(BASE_CSV_DIR):
     os.mkdir(BASE_CSV_DIR)
 app.mount("/static", StaticFiles(directory=BASE_CSV_DIR), name="static")
-
+cache_device_info = dict()
 
 @app.middleware("http")
 async def http_filter(request: Request, call_next):
@@ -58,12 +60,17 @@ async def get_local_device(request: Request):
         logger.info("devices {0}".format(devices))
         res_list: list = []
         for i in devices:
-            adb.serialno = i[0]
-            info: dict = await asyncio.wait_for(asyncio.to_thread(adb.get_device_info), 10)
-            info["host"] = client_host
-            info["port"] = 5037
-            info["platform"] = "android"
-            res_list.append(info)
+            if i[0] in cache_device_info:
+                res_list.append(cache_device_info[i[0]])
+                cache_device_info[i[0]]["host"] = client_host
+            else:
+                adb.serialno = i[0]
+                info: dict = await asyncio.wait_for(asyncio.to_thread(adb.get_device_info), 10)
+                info["host"] = client_host
+                info["port"] = 5037
+                info["platform"] = "android"
+                res_list.append(info)
+                cache_device_info[i[0]] = info
         logger.info(res_list)
         return res_list
 
@@ -236,32 +243,13 @@ async def get_username(request: Request):
     hash_value = hashlib.md5(raw_data).hexdigest()
     return hash_value
 
+def open_url():
+    time.sleep(1)
+    webbrowser.open("http://127.0.0.1:80")
 
 if __name__ == "__main__":
     import uvicorn
     multiprocessing.freeze_support()
-    # uvicorn.run(app, host="0.0.0.0", port=80, log_level="debug")
+    threading.Thread(target=open_url).start()
     uvicorn.run("performancetest.web.main:app", host="0.0.0.0", port=80, log_level="debug", workers=10, reload=True)
     logger.info("服务启动成功请访问: http://localhost:80")
-    import sys
-    from PyQt5.QtWidgets import QApplication, QMainWindow
-    from PyQt5.QtWebEngineWidgets import QWebEngineView
-
-    class MainWindow(QMainWindow):
-        def __init__(self):
-            super().__init__()
-
-            self.webview = QWebEngineView(self)
-            self.setCentralWidget(self.webview)
-
-            # Load the HTML file containing the Vue app
-            with open('test_result/index.html', 'r', encoding="utf-8") as file:
-                html_content = file.read()
-                self.webview.setHtml(html_content)
-
-
-    if __name__ == '__main__':
-        app = QApplication(sys.argv)
-        window = MainWindow()
-        window.show()
-        sys.exit(app.exec_())
