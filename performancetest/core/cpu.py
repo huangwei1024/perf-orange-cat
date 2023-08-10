@@ -46,7 +46,6 @@ class CpuMonitor(Monitor):
     def getTotalCpuStat(self):
         """get the total cpu usage at a certain time"""
         cmd = 'cat /proc/stat | grep ^cpu'
-        print(cmd)
         result = G.device.adb.raw_shell(cmd).decode()
         r = re.compile(r'(?<!cpu)\d+')
         toks = r.findall(result)

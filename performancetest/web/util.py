@@ -356,6 +356,10 @@ class DataCollect(object):
                 perf_data[monitor]['realtime_downFlow'] = new_realtime_downFlow
                 perf_data[monitor]['realtime_upFlow'] = new_realtime_upFlow
                 perf_data[monitor]['sum_realtimeFlow'] = new_sum_realtimeFlow
+                perf_data[monitor]['sum_accumFlow'] = new_sum_accumFlow
+                perf_data[monitor]['accumulate_downFlow'] = new_accumulate_downFlow
+                perf_data[monitor]['accumulate_upFlow'] = new_accumulate_upFlow
+
             elif monitor == "cpu" and monitor in perf_data and "proc_app_cpu" in perf_data["cpu"]:
                 existing_time = perf_data[monitor]['time']
                 existing_value = perf_data[monitor]['value']
