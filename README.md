@@ -10,6 +10,7 @@
 https://github.com/1033866383/perf-orange-cat
 <br/>
 <h2>
+二进制包：https://github.com/1033866383/perf-orange-cat/releases/tag/v1.1.0
 安装：pip install -U performancetest
 <br/><br/>
 启动：python -m performancetest.web.main   
