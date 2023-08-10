@@ -246,12 +246,16 @@ class DataCollect(object):
                 del res_dict["avg"]
                 res_dict["realtime_upFlow"] = head_time_value + np.round(csv_data[:, 2], 2).tolist() + end_time_value
                 res_dict["sum_realtimeFlow"] = head_time_value + np.round(csv_data[:, 3], 2).tolist() + end_time_value
+                res_dict["sum_accumFlow_sum"] = 0
                 if csv_data.shape[1] > 4:
+                    sum_accumFlow_np = np.round(csv_data[:, 6], 2)
                     res_dict["accumulate_downFlow"] = head_time_value + np.round(csv_data[:, 4],
                                                                                  2).tolist() + end_time_value
                     res_dict["accumulate_upFlow"] = head_time_value + np.round(csv_data[:, 5],
                                                                                2).tolist() + end_time_value
-                    res_dict["sum_accumFlow"] = head_time_value + np.round(csv_data[:, 6], 2).tolist() + end_time_value
+                    res_dict["sum_accumFlow"] = head_time_value + sum_accumFlow_np.tolist() + end_time_value
+
+                    res_dict["sum_accumFlow_sum"] = "{} kB".format(sum_accumFlow_np[-1]) if sum_accumFlow_np[-1] < 1024 else "{} M".format(round(sum_accumFlow_np[-1] / 1024, 2))
             except:
                 traceback.print_exc()
                 res_dict["realtime_downFlow"] = res_dict["value"]
@@ -265,19 +269,20 @@ class DataCollect(object):
                 proc_app_cpu = csv_data[:, 2].tolist()
                 proc_sys_cpu = csv_data[:, 3].tolist()
                 res_dict["proc_app_cpu_max"] = max(proc_app_cpu)
-                res_dict["proc_sys_cpu_sum"] = max(proc_sys_cpu)
+                res_dict["proc_sys_cpu_max"] = max(proc_sys_cpu)
+                res_dict["proc_app_cpu_avg"] = sum(proc_app_cpu) / len(proc_app_cpu)
+                res_dict["proc_sys_cpu_avg"] = sum(proc_sys_cpu) / len(proc_sys_cpu)
                 proc_app_cpu = head_time_value + proc_app_cpu + end_time_value
                 proc_sys_cpu = head_time_value + proc_sys_cpu + end_time_value
                 res_dict["proc_app_cpu"] = proc_app_cpu
                 res_dict["proc_sys_cpu"] = proc_sys_cpu
             except Exception as e:
-                res_dict["full_number"] = 0
-                res_dict["jank_number"] = []
-                res_dict["big_jank_number"] = []
-                res_dict["ftimege100"] = []
-                res_dict["jank_number_sum"] = 0
-                res_dict["big_jank_number_sum"] = 0
-                res_dict["all_jank_rate"] = 0
+                res_dict["proc_app_cpu"] = []
+                res_dict["proc_sys_cpu"] = []
+                res_dict["proc_app_cpu_max"] = 0
+                res_dict["proc_sys_cpu_max"] = 0
+                res_dict["proc_app_cpu_avg"] = 0
+                res_dict["proc_app_cpu_avg"] = 0
                 logger.error(e)
             # fps值需要去掉开头一个和最后一个
         return res_dict

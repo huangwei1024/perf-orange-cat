@@ -272,15 +272,41 @@
                                 <div>
                                     <hr/>
                                     <el-descriptions column="3">
-                                        <el-descriptions-item label="最大值" :label-style="{fontWeight: 'bold'}">
+                                        <el-descriptions-item label="最大值" :label-style="{fontWeight: 'bold'}" v-if="typeItem !== 'cpu' && typeItem !== 'network'">
                                             {{allReportData[typeItem] ? allReportData[typeItem].max: 0}}
                                         </el-descriptions-item>
-                                        <el-descriptions-item label="最小值" :label-style="{fontWeight: 'bold'}">
+                                        <el-descriptions-item label="最小值" :label-style="{fontWeight: 'bold'}" v-if="typeItem !== 'cpu' && typeItem !== 'network'">
                                             {{allReportData[typeItem]? allReportData[typeItem].min: 0}}
                                         </el-descriptions-item>
-                                        <el-descriptions-item label="平均值" :label-style="{fontWeight: 'bold'}">
+                                        <el-descriptions-item label="平均值" :label-style="{fontWeight: 'bold'}" v-if="typeItem !== 'cpu' && typeItem !== 'network'">
                                             {{allReportData[typeItem]? allReportData[typeItem].avg: 0}}
                                         </el-descriptions-item>
+                                      
+                                        <el-descriptions-item label="top获取cpu最大值" :label-style="{fontWeight: 'bold'}" v-if="typeItem === 'cpu'">
+                                          {{allReportData[typeItem] ? allReportData[typeItem].max: 0}}
+                                      </el-descriptions-item>
+                                      <el-descriptions-item label="top获取cpu平均值" :label-style="{fontWeight: 'bold'}" v-if="typeItem === 'cpu'">
+                                          {{allReportData[typeItem]? allReportData[typeItem].avg: 0}}
+                                      </el-descriptions-item>
+
+                                      <el-descriptions-item label="procstat获取应用cpu最大值" :label-style="{fontWeight: 'bold'}" v-if="typeItem === 'cpu'">
+                                        {{allReportData[typeItem] ? allReportData[typeItem].proc_app_cpu_max: 0}}
+                                      </el-descriptions-item> 
+                                      <el-descriptions-item label="procstat获取应用cpu平均值" :label-style="{fontWeight: 'bold'}" v-if="typeItem === 'cpu'">
+                                          {{allReportData[typeItem]? allReportData[typeItem].proc_app_cpu_avg: 0}}
+                                      </el-descriptions-item>
+
+                                      <el-descriptions-item label="procstat获取系统cpu最大值" :label-style="{fontWeight: 'bold'}" v-if="typeItem === 'cpu'">
+                                        {{allReportData[typeItem] ? allReportData[typeItem].proc_sys_cpu_max: 0}}
+                                      </el-descriptions-item> 
+                                      <el-descriptions-item label="procstat获取系统cpu平均值" :label-style="{fontWeight: 'bold'}" v-if="typeItem === 'cpu'">
+                                          {{allReportData[typeItem]? allReportData[typeItem].proc_sys_cpu_avg: 0}}
+                                      </el-descriptions-item>
+
+                                      <el-descriptions-item label="累计消耗流量" :label-style="{fontWeight: 'bold'}" v-if="typeItem === 'network'">
+                                        {{allReportData[typeItem]? allReportData[typeItem].sum_accumFlow_sum: 0}}
+                                      </el-descriptions-item>
+
                                         <el-descriptions-item label="卡顿数" :label-style="{fontWeight: 'bold'}"
                                                               v-if="typeItem === 'fps'">
                                             {{allReportData[typeItem] ? allReportData[typeItem].jank_number_sum: 0}}
@@ -671,7 +697,7 @@
             let alldata = []
             for(let data of 
               [
-                {"data": this.allReportData[chartName].sum_accumFlow, "name": "总流量"}, {"data": this.allReportData[chartName].accumulate_downFlow, "name": "总下载流量"}, {"data": this.allReportData[chartName].accumulate_upFlow, "name": "总下载流量"}, {"data": this.allReportData[chartName].sum_realtimeFlow, "name": "实时总流量"}, {"data": this.allReportData[chartName].realtime_downFlow, "name": "实时下载流量"}, {"data": this.allReportData[chartName].realtime_upFlow, "name": "实时上传流量"}
+                {"data": this.allReportData[chartName].sum_accumFlow, "name": "累计总流量"}, {"data": this.allReportData[chartName].accumulate_downFlow, "name": "累计下载流量"}, {"data": this.allReportData[chartName].accumulate_upFlow, "name": "累计上传流量"}, {"data": this.allReportData[chartName].sum_realtimeFlow, "name": "实时总流量"}, {"data": this.allReportData[chartName].realtime_downFlow, "name": "实时下载流量"}, {"data": this.allReportData[chartName].realtime_upFlow, "name": "实时上传流量"}
               ]
               ){
               let obj = JSON.parse(JSON.stringify(this.chartOption.series)) 
@@ -688,7 +714,7 @@
             let alldata = []
             for(let data of 
               [
-                {"data": this.allReportData[chartName].value, "name": "top获取cpu"}, {"data": this.allReportData[chartName].proc_app_cpu, "name": "proc-stat获取cpu"}, {"data": this.allReportData[chartName].proc_sys_cpu, "name": "proc-stat获取总cpu"}
+                {"data": this.allReportData[chartName].value, "name": "top获取cpu"}, {"data": this.allReportData[chartName].proc_app_cpu, "name": "proc-stat获取的应用cpu"}, {"data": this.allReportData[chartName].proc_sys_cpu, "name": "proc-stat获取的系统总cpu"}
              ]
               ){
               let obj = JSON.parse(JSON.stringify(this.chartOption.series)) 
