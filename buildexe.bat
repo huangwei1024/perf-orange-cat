@@ -1,1 +1,1 @@
-pyinstaller --onefile --add-data "performancetest;performancetest" --add-data "performancetest/web/test_result/index.html;performancetest/web/test_result"  --add-data "E:\服务器上传代码\app_performance_private\fatenv\Lib\site-packages\airtest;airtest" performancetest/web/main.py -i icon
+pyinstaller --onefile --add-data "performancetest;performancetest" --add-data "performancetest/web/test_result/index.html;performancetest/web/test_result"  --add-data "airtest path;airtest" performancetest/web/main.py -i icon
