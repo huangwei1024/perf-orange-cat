@@ -282,7 +282,7 @@ class DataCollect(object):
                 res_dict["proc_app_cpu_max"] = 0
                 res_dict["proc_sys_cpu_max"] = 0
                 res_dict["proc_app_cpu_avg"] = 0
-                res_dict["proc_app_cpu_avg"] = 0
+                res_dict["proc_sys_cpu_avg"] = 0
                 logger.error(e)
             # fps值需要去掉开头一个和最后一个
         return res_dict
@@ -370,12 +370,16 @@ class DataCollect(object):
                 new_proc_sys_cpu = ['-'] * len(new_time)
                 for i, t in enumerate(existing_time):
                     new_value[int(t) - int(min_time)] = existing_value[i]
-                    new_proc_cpu[int(t) - int(min_time)] = existing_proc_cpu[i]
-                    new_proc_sys_cpu[int(t) - int(min_time)] = existing_proc_sys_cpu[i]
+                    if existing_proc_cpu:
+                        new_proc_cpu[int(t) - int(min_time)] = existing_proc_cpu[i]
+                    if existing_proc_sys_cpu:
+                        new_proc_sys_cpu[int(t) - int(min_time)] = existing_proc_sys_cpu[i]
                 perf_data[monitor]['time'] = new_time
                 perf_data[monitor]['value'] = new_value
-                perf_data[monitor]['proc_app_cpu'] = new_proc_cpu
-                perf_data[monitor]['proc_sys_cpu'] = new_proc_sys_cpu
+                if existing_proc_cpu:
+                    perf_data[monitor]['proc_app_cpu'] = new_proc_cpu
+                if existing_proc_sys_cpu:
+                    perf_data[monitor]['proc_sys_cpu'] = new_proc_sys_cpu
             else:
                 if monitor in perf_data:
                     existing_time = perf_data[monitor]['time']
