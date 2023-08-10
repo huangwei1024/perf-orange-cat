@@ -41,12 +41,20 @@ API文档访问：http://localhost/redoc/
 
 <h2>目录介绍</h2>
 <ul>
-<li>test_result/ 包含前端页面和测试结果。</li>
+<li>performancetest/web/test_result/ 包含前端页面和测试结果。</li>
 <li>log.log 为项目运行日志。</li>
 <li>task.sqlite 为sqllite数据库，包含了每个任务的基本详情也是唯一的dao对象。</li>
 </ul>
 
-![image](https://github.com/1033866383/perf-orange-cat/assets/56209295/852cda82-058b-4832-9daf-8074c1a7bb6b)
+<h2>2023.8.10新功能</h2>
+Android 多类型cpu, 流量新功能演示：
+
+
+![微信图片_20230810000255](https://github.com/1033866383/perf-orange-cat/assets/56209295/da98d4bc-9784-4e75-8a3c-a8b9e94d02bd)
+
+![微信图片_20230810000359](https://github.com/1033866383/perf-orange-cat/assets/56209295/bb88db4f-2013-4937-b1f2-cd1510adc9d1)
+
+
 
 <h2>使用教程</h2>
 建议使用上方的 pip install 的方式装包启动。
