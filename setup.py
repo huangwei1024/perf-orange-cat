@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='performancetest',
-    version='0.0.20',
+    version='0.0.21',
     url='https://github.com/1033866383/perf-orange-cat',
     author='bozhou.fan',
     author_email='15525730080@163.com',

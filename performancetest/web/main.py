@@ -81,7 +81,7 @@ async def get_local_device(request: Request):
 async def get_local_device_packages(request: Request, device: DeviceEntity):
     client_host: str = request.client.host
     adb: ADB = ADB(server_addr=(client_host, 5037), serialno=device.serialno)
-    app_list: list = await asyncio.wait_for(asyncio.to_thread(adb.list_app, third_only=True), 10)
+    app_list: list = await asyncio.wait_for(asyncio.to_thread(adb.list_app), 10)
     logger.info(app_list)
     if not app_list:
         app_list = []
