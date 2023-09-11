@@ -10,7 +10,7 @@
 https://github.com/1033866383/perf-orange-cat
 <br/>
 <h2>
-免安装二进制包：https://github.com/1033866383/perf-orange-cat/releases/tag/v1.1.0
+免安装二进制包：https://github.com/1033866383/perf-orange-cat/releases
 <br/><br/>
 安装：pip install -U performancetest
 <br/><br/>
