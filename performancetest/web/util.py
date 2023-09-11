@@ -103,9 +103,12 @@ class DataCollect(object):
         data_collect = DataCollect(file_dir_path=file_dir_path)
         result_dict: dict = {}  # 存储每种监控类型的结果
         for monitor_name in monitortypes:
-            future = cls.__monitortype_func.get(monitor_name)(data_collect)
-            if future.any():
-                result_dict[monitor_name] = future
+            try:
+                future = cls.__monitortype_func.get(monitor_name)(data_collect)
+                if future.any():
+                    result_dict[monitor_name] = future
+            except:
+                traceback.print_exc()
         for key, value_future in list(result_dict.items()):
             try:
                 value_future_res = value_future
