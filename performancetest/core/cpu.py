@@ -88,9 +88,8 @@ class CpuMonitor(Monitor):
             appCpuRate = round(float((processCpuTime_2 - processCpuTime_1) / (totalCpuTime_2 - totalCpuTime_1) * 100),
                                2)
             sysCpuRate = round(float((sysCpuTime_2 - sysCpuTime_1) / (totalCpuTime_2 - totalCpuTime_1) * 100), 2)
-        except Exception as e:
+        except:
             appCpuRate, sysCpuRate = 0, 0
-            logger.exception(e)
             traceback.print_exc()
         return appCpuRate, sysCpuRate
 

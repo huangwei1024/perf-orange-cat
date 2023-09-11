@@ -25,7 +25,9 @@ class IosPerfMonitor(Monitor):
                     ["timestamp", "FPS", "lag_number", "FPS_full_number", "jank_number", "big_jank_number"]),
             "gpu": (os.path.join(self.save_dir, "gpu.csv"), ["timestamp", "gpu%"]),
             "devicebattery": (os.path.join(self.save_dir, "devicebattery.csv"),
-                              ["timestamp", "devicetemperature", "devicebatterylevel", "charge"])
+                              ["timestamp", "devicetemperature", "devicebatterylevel", "charge"]),
+            "network": (os.path.join(self.save_dir, "network.csv"), ["timestamp", "realtime_downFlow", "realtime_upFlow", "sum_realtimeFlow",
+                         "accumulate_downFlow", "accumulate_upFlow", "sum_accumFlow", ]),
         }
         for k, v in self.property_all.items():
             with open(v[0], 'w+') as df:
@@ -59,7 +61,10 @@ class IosPerfMonitor(Monitor):
 
     # 结束任务
     def stop(self):
+        G = self.G
+        G.device.stop_perf()
         self.G.stop_event.clear()
+
 
     # 暂停任务
     def suspend(self):
@@ -81,12 +86,10 @@ class IosPerfMonitor(Monitor):
                 before = time.time()
                 perf_line_list = self.get_perf_info()  # 可超时的任务
                 if not perf_line_list:
-                    time.sleep(0.2)
+                    time.sleep(1)
                     continue
                 for perf_line in perf_line_list:
-                    logger.info("perf result {0}".format(perf_line))
                     logging.info("---iosperf 获取到数据 {0}".format('performance: ', perf_line))
-                    print(type(perf_line), perf_line)
                     file_path = self.property_all.get(perf_line.get("type"))
                     if not file_path:
                         time.sleep(0.2)
@@ -97,7 +100,6 @@ class IosPerfMonitor(Monitor):
                         logging.info("write {0}".format(value_list))
                         csv.writer(df, lineterminator='\n').writerow(value_list)
                         del value_list[:]
-                    logger.info("value all: {0}".format(perf_line))
                 after = time.time()
                 time_consume = after - before
                 delta_inter = self.interval - time_consume

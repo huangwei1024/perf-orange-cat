@@ -251,5 +251,5 @@ if __name__ == "__main__":
     import uvicorn
     multiprocessing.freeze_support()
     threading.Thread(target=open_url).start()
-    uvicorn.run("performancetest.web.main:app", host="0.0.0.0", port=80, log_level="debug", workers=10, reload=True)
+    uvicorn.run("performancetest.web.main:app", host="0.0.0.0", port=80, log_level="error", workers=4, reload=False)
     logger.info("服务启动成功请访问: http://localhost:80")

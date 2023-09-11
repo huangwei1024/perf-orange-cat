@@ -102,49 +102,37 @@ class DataCollect(object):
     def item_result(cls, file_dir_path: int, monitortypes: tuple, **kwargs):
         data_collect = DataCollect(file_dir_path=file_dir_path)
         result_dict: dict = {}  # 存储每种监控类型的结果
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            # 执行所有读取
-            wait_task: list = []
-            for monitor_name in monitortypes:
-                future = executor.submit(cls.__monitortype_func.get(monitor_name), data_collect)
+        for monitor_name in monitortypes:
+            future = cls.__monitortype_func.get(monitor_name)(data_collect)
+            if future.any():
                 result_dict[monitor_name] = future
-                wait_task.append(future)
-            # wait task end
-            done, not_done = concurrent.futures.wait(wait_task, return_when=concurrent.futures.ALL_COMPLETED)
-            for key, value_future in list(result_dict.items()):
-                try:
-                    value_future_res = value_future.result()
-                    if len(value_future_res.shape) < 2:
-                        raise Exception("数组低于2维度")
-                    if value_future_res.size <= 0:
-                        raise Exception("数据结果为空")
-                    result_dict[key] = value_future_res
-                    # 如果是fps 会去掉第一个和 最后一个点
-                    if key == "fps":
-                        result_dict[key] = result_dict[key][1: -1] if len(
-                            result_dict[key]) > 3 else result_dict[key]
-                except Exception as e:
-                    logger.error(e)
-                    result_dict.pop(key, None)
-
-            # 处理公共开始时间, 结束时间
-            # logger.info("item{0}".format(result_dict))
-            if result_dict:
-                public_start_time, public_end_time = cls.get_public_time(result_dict)
-                # 获取所有结果
-                for (monitor_name, future_result) in result_dict.items():
-                    result_dict[monitor_name] = cls.time_value_result(monitor_name, future_result,
-                                                                      public_start_time, public_end_time,
-                                                                      is_need_relative_time=kwargs.get(
-                                                                          "is_need_relative_time", False))
-                result_dict["public_start_time"] = public_start_time
-                result_dict["public_end_time"] = public_end_time
-                img_path_dir = os.path.join(file_dir_path, "picture_log")
-                if os.path.exists(img_path_dir):
-                    task_dir, task_name_int = os.path.split(file_dir_path)
-                    _, host = os.path.split(task_dir)
-                    result_dict["public_imgs"] = cls.get_public_imgs(img_path_dir, public_start_time,
-                                                                     public_end_time, task_name_int, host)
+        for key, value_future in list(result_dict.items()):
+            try:
+                value_future_res = value_future
+                if len(value_future_res.shape) < 2:
+                    raise Exception("数组低于2维度")
+                if value_future_res.size <= 0:
+                    raise Exception("数据结果为空")
+                result_dict[key] = value_future_res
+            except Exception as e:
+                logger.error(e)
+                result_dict.pop(key, None)
+        if result_dict:
+            public_start_time, public_end_time = cls.get_public_time(result_dict)
+            # 获取所有结果
+            for (monitor_name, future_result) in result_dict.items():
+                result_dict[monitor_name] = cls.time_value_result(monitor_name, future_result,
+                                                                  public_start_time, public_end_time,
+                                                                  is_need_relative_time=kwargs.get(
+                                                                      "is_need_relative_time", False))
+            result_dict["public_start_time"] = public_start_time
+            result_dict["public_end_time"] = public_end_time
+            img_path_dir = os.path.join(file_dir_path, "picture_log")
+            if os.path.exists(img_path_dir):
+                task_dir, task_name_int = os.path.split(file_dir_path)
+                _, host = os.path.split(task_dir)
+                result_dict["public_imgs"] = cls.get_public_imgs(img_path_dir, public_start_time,
+                                                                 public_end_time, task_name_int, host)
         try:
             result_dict = cls.format_data(result_dict, monitortypes)
         except:
@@ -202,7 +190,7 @@ class DataCollect(object):
         value: list = np.round(csv_data[:, 1], 2).tolist()
         value_max = max(value)
         value_min = min(value)
-        value_avg = sum(value) / len(value) if value and len(value) else 0
+        value_avg = round(sum(value) / len(value), 2) if value and len(value) else 0
         real_time_int: list = list(map(lambda x: int(x), real_time))
         head_lack_second = real_time_int[0] - start_time
         end_lack_second = end_time - real_time_int[-1]
@@ -222,8 +210,8 @@ class DataCollect(object):
                 source_big_jank_number = csv_data[:, 5].tolist()
                 res_dict["jank_number_sum"] = sum(source_jank_number)
                 res_dict["big_jank_number_sum"] = sum(source_big_jank_number)
-                res_dict["all_jank_rate"] = (sum(source_jank_number) + sum(source_big_jank_number)) / len(
-                    res_dict["time"]) * 100
+                res_dict["all_jank_rate"] = round((sum(source_jank_number) + sum(source_big_jank_number)) / len(
+                    res_dict["time"]) * 100, 2)
                 res_dict["jank_number"] = head_time_value + source_jank_number + end_time_value  # 卡顿
                 res_dict["big_jank_number"] = head_time_value + source_big_jank_number + end_time_value  # 强卡顿
                 res_dict["ftimege100"] = head_time_value + csv_data[:, 6].tolist() + end_time_value  # 增量耗时
@@ -255,7 +243,9 @@ class DataCollect(object):
                                                                                2).tolist() + end_time_value
                     res_dict["sum_accumFlow"] = head_time_value + sum_accumFlow_np.tolist() + end_time_value
 
-                    res_dict["sum_accumFlow_sum"] = "{} kB".format(sum_accumFlow_np[-1]) if sum_accumFlow_np[-1] < 1024 else "{} M".format(round(sum_accumFlow_np[-1] / 1024, 2))
+                    res_dict["sum_accumFlow_sum"] = "{} kB".format(sum_accumFlow_np[-1]) if sum_accumFlow_np[
+                                                                                                -1] < 1024 else "{} M".format(
+                        round(sum_accumFlow_np[-1] / 1024, 2))
             except:
                 traceback.print_exc()
                 res_dict["realtime_downFlow"] = res_dict["value"]
@@ -270,8 +260,8 @@ class DataCollect(object):
                 proc_sys_cpu = csv_data[:, 3].tolist()
                 res_dict["proc_app_cpu_max"] = max(proc_app_cpu)
                 res_dict["proc_sys_cpu_max"] = max(proc_sys_cpu)
-                res_dict["proc_app_cpu_avg"] = sum(proc_app_cpu) / len(proc_app_cpu)
-                res_dict["proc_sys_cpu_avg"] = sum(proc_sys_cpu) / len(proc_sys_cpu)
+                res_dict["proc_app_cpu_avg"] = round(sum(proc_app_cpu) / len(proc_app_cpu), 2)
+                res_dict["proc_sys_cpu_avg"] = round(sum(proc_sys_cpu) / len(proc_sys_cpu), 2)
                 proc_app_cpu = head_time_value + proc_app_cpu + end_time_value
                 proc_sys_cpu = head_time_value + proc_sys_cpu + end_time_value
                 res_dict["proc_app_cpu"] = proc_app_cpu

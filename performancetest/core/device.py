@@ -111,6 +111,7 @@ class IosDevice(object):
         self.package = package
         self.save_dir = save_dir
         self.perf_dict_iter = dict()
+        self.message_queue = []
 
     def start_app(self):  # 启动app
         self.device.app_start(self.package)
@@ -125,19 +126,40 @@ class IosDevice(object):
         return res_text
 
     def get_perf(self):
-        if not self.perf_dict_iter.get(self.package):
-            perf = tidevice.Performance(self.device, [DataType.CPU, DataType.MEMORY, DataType.FPS, DataType.GPU])
-            _rp = RunningProcess(self.device, self.package)
-            perf._rp = _rp
-            self.perf_dict_iter[self.package] = {"cm": iter_cpu_memory(self.device, _rp), "fps": iter_fps(self.device),
-                                                 "gpu": iter_gpu(self.device)}
-        perf_info = None
-        try:
-            perf_info = self.gen_perf_info(self.package)
-        except:
-            traceback.print_exc()
-            del self.perf_dict_iter[self.package]
-        return perf_info
+        def callback(_type: DataType, value: dict):
+            self.message_queue.append({"type": _type, "value": value})
+
+        # with self.lock:
+        current_item_key = self.serialno + "_" + self.package
+        if not self.perf_dict_iter.get(current_item_key) or self.perf_dict_iter.get(current_item_key).get(
+                "c_m_n")._stop_event.is_set():
+            c_m_n = tidevice.Performance(self.device, [DataType.CPU, DataType.MEMORY])
+            g_f = tidevice.Performance(self.device, [DataType.GPU, DataType.FPS])
+            self.perf_dict_iter[current_item_key] = {"c_m_n": c_m_n, "g_f": g_f}
+            self.message_queue = []
+            try:
+                c_m_n.start(self.package, callback=callback)
+                g_f.start(self.package, callback=callback)
+            except:
+                traceback.print_exc()
+                c_m_n.stop()
+                g_f.stop()
+                del self.perf_dict_iter[current_item_key]
+        res_message = sorted(self.message_queue, key=lambda k: k["value"]["timestamp"])
+        self.message_queue = []
+        return res_message
+
+    def stop_perf(self):
+        current_item_key = self.serialno + "_" + self.package
+        if self.perf_dict_iter.get(current_item_key):
+            try:
+                self.perf_dict_iter.get(current_item_key).get("c_m_n").stop()
+            except:
+                traceback.print_exc()
+            try:
+                self.perf_dict_iter.get(current_item_key).get("g_f").stop()
+            except:
+                traceback.print_exc()
 
     def gen_perf_info(self, key) -> list:
         cur_list: list = []
